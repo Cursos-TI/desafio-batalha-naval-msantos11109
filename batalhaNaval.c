@@ -1,92 +1,117 @@
 #include <stdio.h>
 
-#define TAM 10      // Tamanho do tabuleiro (10x10)
-#define NAVIO 3     // Valor que representa um navio no tabuleiro
-#define TAM_NAVIO 3 // Tamanho fixo de cada navio
+#define TAM 10          // Tamanho do tabuleiro 10x10
+#define NAVIO 3         // Valor que marca um navio no tabuleiro
+#define TAM_NAVIO 3     // Tamanho fixo de cada navio
+
+// ------------------------------------------------------------
+// Função que verifica se um navio pode ser colocado em certas
+// coordenadas (horizontal, vertical ou diagonal) SEM sair do
+// tabuleiro e SEM sobrepor outro navio.
+// ------------------------------------------------------------
+int podeColocar(int tabuleiro[TAM][TAM], int coords[][2], int tamanho) {
+    for (int i = 0; i < tamanho; i++) {
+        int lin = coords[i][0];
+        int col = coords[i][1];
+
+        // Verifica limites
+        if (lin < 0 || lin >= TAM || col < 0 || col >= TAM)
+            return 0;
+
+        // Verifica sobreposição
+        if (tabuleiro[lin][col] == NAVIO)
+            return 0;
+    }
+    return 1;
+}
+
+// ------------------------------------------------------------
+// Função que coloca um navio no tabuleiro
+// ------------------------------------------------------------
+void colocarNavio(int tabuleiro[TAM][TAM], int coords[][2], int tamanho) {
+    for (int i = 0; i < tamanho; i++) {
+        int lin = coords[i][0];
+        int col = coords[i][1];
+        tabuleiro[lin][col] = NAVIO;
+    }
+}
 
 int main() {
 
     // ------------------------------------------------------------
-    // 1. DECLARAÇÃO E INICIALIZAÇÃO DO TABULEIRO
+    // 1. CRIAÇÃO E INICIALIZAÇÃO DO TABULEIRO
     // ------------------------------------------------------------
     int tabuleiro[TAM][TAM];
 
-    // Inicializa todo o tabuleiro com 0 (água)
-    for (int i = 0; i < TAM; i++) {
-        for (int j = 0; j < TAM; j++) {
+    for (int i = 0; i < TAM; i++)
+        for (int j = 0; j < TAM; j++)
             tabuleiro[i][j] = 0;
-        }
-    }
 
     // ------------------------------------------------------------
-    // 2. DECLARAÇÃO DOS NAVIOS (vetores representando cada navio)
-    // ------------------------------------------------------------
-    int navioHorizontal[TAM_NAVIO] = {NAVIO, NAVIO, NAVIO};
-    int navioVertical[TAM_NAVIO]   = {NAVIO, NAVIO, NAVIO};
-
-    // ------------------------------------------------------------
-    // 3. DEFINIÇÃO DAS COORDENADAS INICIAIS DOS NAVIOS
-    // (Podem ser alteradas, pois são fixas no código)
+    // 2. DEFINIÇÃO DOS 4 NAVIOS (2 normais + 2 diagonais)
+    //    Todos com tamanho 3 e coordenadas fixas no código.
     // ------------------------------------------------------------
 
-    // Navio horizontal começando na linha 2, coluna 4
-    int linhaH = 2;
-    int colunaH = 4;
+    // NAVIO 1 - Horizontal
+    int navio1[TAM_NAVIO][2] = {
+        {2, 1},
+        {2, 2},
+        {2, 3}
+    };
 
-    // Navio vertical começando na linha 5, coluna 7
-    int linhaV = 5;
-    int colunaV = 7;
+    // NAVIO 2 - Vertical
+    int navio2[TAM_NAVIO][2] = {
+        {5, 7},
+        {6, 7},
+        {7, 7}
+    };
+
+    // NAVIO 3 - Diagonal principal (↘)
+    int navio3[TAM_NAVIO][2] = {
+        {1, 1},
+        {2, 2},
+        {3, 3}
+    };
+
+    // NAVIO 4 - Diagonal secundária (↙)
+    int navio4[TAM_NAVIO][2] = {
+        {1, 8},
+        {2, 7},
+        {3, 6}
+    };
 
     // ------------------------------------------------------------
-    // 4. VALIDAÇÃO DO POSICIONAMENTO (dentro dos limites)
+    // 3. VALIDAÇÃO E POSICIONAMENTO DOS NAVIOS
     // ------------------------------------------------------------
-    // Valida navio horizontal
-    if (colunaH + TAM_NAVIO > TAM) {
-        printf("ERRO: Navio horizontal fora dos limites!\n");
+    if (!podeColocar(tabuleiro, navio1, TAM_NAVIO)) {
+        printf("Erro: Navio 1 inválido ou sobreposto!\n");
         return 1;
     }
+    colocarNavio(tabuleiro, navio1, TAM_NAVIO);
 
-    // Valida navio vertical
-    if (linhaV + TAM_NAVIO > TAM) {
-        printf("ERRO: Navio vertical fora dos limites!\n");
+    if (!podeColocar(tabuleiro, navio2, TAM_NAVIO)) {
+        printf("Erro: Navio 2 inválido ou sobreposto!\n");
         return 1;
     }
+    colocarNavio(tabuleiro, navio2, TAM_NAVIO);
 
-    // ------------------------------------------------------------
-    // 5. VERIFICA SE HÁ SOBREPOSIÇÃO ENTRE OS DOIS NAVIOS
-    // ------------------------------------------------------------
-    for (int i = 0; i < TAM_NAVIO; i++) {
-        int hLinha = linhaH;
-        int hCol = colunaH + i;
-
-        int vLinha = linhaV + i;
-        int vCol = colunaV;
-
-        if (hLinha == vLinha && hCol == vCol) {
-            printf("ERRO: Navios sobrepostos!\n");
-            return 1;
-        }
+    if (!podeColocar(tabuleiro, navio3, TAM_NAVIO)) {
+        printf("Erro: Navio 3 inválido ou sobreposto!\n");
+        return 1;
     }
+    colocarNavio(tabuleiro, navio3, TAM_NAVIO);
 
-    // ------------------------------------------------------------
-    // 6. POSICIONA OS NAVIOS NO TABULEIRO
-    // ------------------------------------------------------------
-
-    // Navio horizontal
-    for (int i = 0; i < TAM_NAVIO; i++) {
-        tabuleiro[linhaH][colunaH + i] = NAVIO;
+    if (!podeColocar(tabuleiro, navio4, TAM_NAVIO)) {
+        printf("Erro: Navio 4 inválido ou sobreposto!\n");
+        return 1;
     }
+    colocarNavio(tabuleiro, navio4, TAM_NAVIO);
 
-    // Navio vertical
-    for (int i = 0; i < TAM_NAVIO; i++) {
-        tabuleiro[linhaV + i][colunaV] = NAVIO;
-    }
 
     // ------------------------------------------------------------
-    // 7. EXIBE O TABULEIRO NA TELA
+    // 4. EXIBIÇÃO DO TABULEIRO
     // ------------------------------------------------------------
-
-    printf("\n--- TABULEIRO BATALHA NAVAL ---\n\n");
+    printf("\n--- TABULEIRO BATALHA NAVAL (Nível Intermediário) ---\n\n");
 
     for (int i = 0; i < TAM; i++) {
         for (int j = 0; j < TAM; j++) {
@@ -97,3 +122,4 @@ int main() {
 
     return 0;
 }
+
